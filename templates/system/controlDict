@@ -1,0 +1,252 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |				
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  11                                   	
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     foamMultiRun;
+/*
+regionSolvers
+{
+    fluid1     incompressibleFluid;
+    fluid2     incompressibleFluid;
+    fluid3     incompressibleFluid;
+}
+*/
+solver          incompressibleFluid;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         10000;
+
+deltaT          1;
+
+writeControl    runTime;
+
+writeInterval   1000;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  10;
+
+writeCompression uncompressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  yes;
+
+// ************************************************************************* //
+
+functions
+{
+    #includeFunc    residuals
+
+///////////////////////////////////////////////////////////////////////////
+
+minmaxdomain_scalar
+{
+    type            volFieldValue;
+    libs            ("libfieldFunctionObjects.so");
+
+    enabled         true;   //true or false
+    log             true;   //write to screen
+    
+    //writeControl    writeTime;
+    writeControl    timeStep;
+    writeInterval   1;
+
+    writeFields     false;  //write solution to field value - Not needed when only reporting value to screen
+
+    writeLocation   true;   //write location in the output file
+
+    //mode component;
+
+    select      all;
+
+    operation       none;
+
+    fields
+    (
+        p k omega nut strainRateViscosityModel:nu
+    );
+}
+
+minmaxdomain_vector
+{
+    type            volFieldValue;
+    libs            ("libfieldFunctionObjects.so");
+
+    enabled         true;   //true or false
+    log             true;   //write to screen
+    
+    //writeControl    writeTime;
+    writeControl    timeStep;
+    writeInterval   1;
+
+    writeFields     false;  //write solution to field value - Not needed when only reporting value to screen
+
+    writeLocation   true;   //write location in the output file
+
+    //mode component;
+
+    select      all;
+
+    operation       none;
+
+    fields
+    (
+        U
+    );
+}
+
+mindomain_scalar
+{
+    $minmaxdomain_scalar
+    operation       min;
+}
+
+mindomain_vector
+{
+    $minmaxdomain_vector
+    operation       minMag;
+}
+
+maxdomain_scalar
+{
+    $minmaxdomain_scalar
+    operation       max;
+}
+
+maxdomain_vector
+{
+    $minmaxdomain_vector
+    operation       maxMag;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+//Saves yplus field at the given interval
+
+    yplus_field
+    {
+        type yPlus;
+        libs ("libutilityFunctionObjects.so");
+
+        enabled true;
+        //log false;
+
+        writeControl outputTime;
+    }
+
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+//Print y+ stats every iteration without saving the field
+
+    yplus_stats
+    {
+        type yPlus;
+        libs ("libutilityFunctionObjects.so");
+
+        enabled true;
+
+        writeControl timeStep;
+        writeInterval 1;
+
+//Leave object empty to not save the field
+//This will only print the yplus values every timestep and will not save the field
+        objects ();
+        log true;
+    }
+
+///////////////////////////////////////////////////////////////////////////
+
+    magU
+	{
+		type		    mag;
+		libs		    ("libfieldFunctionObjects.so");
+		field		    U;
+		log		        false;
+		writeFields	    false;
+		result		    magU;
+		writeControl    timeStep;
+                        writeInterval   1000;
+		//regionType	all;
+		select          all;
+	}
+	
+	meanU
+	{
+		type		    volFieldValue;
+		libs		    ("libfieldFunctionObjects.so");
+		log		        true;
+		writeControl	timeStep;
+		writeInterval	1;
+		writeFields	    false;
+		result		    meanU;
+		//regionType	all;
+		operation	    volAverage;
+		select		    all;
+		fields
+		(
+			magU
+		);
+	}
+
+viscosity
+{
+    type            volFieldValue;
+    libs            ("libfieldFunctionObjects.so");
+
+    enabled         true;   //true or false
+    log             false;   //write to screen
+    
+    //writeControl    writeTime;
+    writeControl    timeStep;
+    writeInterval   1000;
+
+    writeFields     true;  //write solution to field value - Not needed when only reporting value to screen
+
+    writeLocation   true;   //write location in the output file
+
+    //mode component;
+
+    select      all;
+
+    operation       none;
+
+    fields
+    (
+        strainRateViscosityModel:nu
+    );
+}
+/*   
+    viscosity
+    {
+    type writeRegisteredObject;
+    functionObjectLibs ("libIOFunctionObjects.so");
+    objectNames ("bananas");
+    outputControl outputTime;
+    outputInterval 1;
+    }*/
+};

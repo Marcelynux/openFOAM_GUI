@@ -1,0 +1,11 @@
+
+#set yr [0:1]
+#set xr [0:2500]
+set key bottom right
+set xlabel "Iterations [s]"
+set ylabel "Average velocity [m/s]"
+set grid
+
+plot "< cat log.solver | grep 'volAverage() of magU =' | awk '{print $5}'" title 'meanU' with lines
+pause 1
+reread

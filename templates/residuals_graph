@@ -1,0 +1,14 @@
+set logscale y
+set title "Residuals"
+set ylabel 'Residual'
+set xlabel 'Iteration'
+set ytics 1e-6, 10, 1
+set format y "10^{%L}"
+plot    "< cat log.solver | grep 'Solving for Ux' | cut -d' ' -f9 | tr -d ','" title 'Ux' with lines,\
+        "< cat log.solver | grep 'Solving for Uy' | cut -d' ' -f9 | tr -d ','" title 'Uy' with lines,\
+        "< cat log.solver | grep 'Solving for Uz' | cut -d' ' -f9 | tr -d ','" title 'Uz' with lines,\
+        "< cat log.solver | grep 'Solving for omega' | cut -d' ' -f9 | tr -d ','" title 'omega' with lines,\
+        "< cat log.solver | grep 'Solving for k' | cut -d' ' -f9 | tr -d ','" title 'k' with lines,\
+        "< cat log.solver | grep 'Solving for p' | cut -d' ' -f13 | sed -n 'p;N;N' | tr -d ','" title 'p' with lines
+pause 1
+reread
