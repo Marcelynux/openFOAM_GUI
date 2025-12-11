@@ -6,5 +6,6 @@ dist/
 wheels/
 *.egg-info
 windows_CFD/
+windows_CFD
 # Virtual environments
 .venv
