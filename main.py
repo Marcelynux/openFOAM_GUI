@@ -1,5 +1,7 @@
+from GUI import GUI_class
+
 def main():
-    print("Hello from openfoam-gui!")
+    interface = GUI_class()
 
 
 if __name__ == "__main__":

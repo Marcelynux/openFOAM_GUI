@@ -7,5 +7,6 @@ wheels/
 *.egg-info
 windows_CFD/
 windows_CFD
+result/
 # Virtual environments
 .venv
