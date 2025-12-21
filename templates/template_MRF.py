@@ -1,0 +1,34 @@
+mixer_name = ""
+MRFProperties_body = r"""/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |				
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  11                                   	
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{{
+    format      ascii;
+    class       dictionary;
+    object      MRFProperties;
+}}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+zone1
+{{
+
+    cellZone    cell_{mixer_name};
+    active      yes;
+
+
+    origin    (10.401924 -1.5 3);
+    axis      (0.45 0.259808 0.3);
+
+    rpm       -80;
+
+}}
+
+
+
+// ************************************************************************* //
+"""

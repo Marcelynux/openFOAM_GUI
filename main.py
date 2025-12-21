@@ -1,5 +1,6 @@
 from GUI import GUI_class
 
+
 def main():
     interface = GUI_class()
 
