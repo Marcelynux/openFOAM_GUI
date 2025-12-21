@@ -1,33 +1,35 @@
-MRFProperties_body = r"""/*--------------------------------*- C++ -*----------------------------------*\
+momentumTransport_body = r"""/*--------------------------------*- C++ -*----------------------------------*\
   =========                 |				
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Version:  11                                   	
+    \\  /    A nd           | Version:  9                                   	
      \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
-{{
+{
     format      ascii;
     class       dictionary;
-    object      MRFProperties;
-}}
+    object      momentumTransport;
+}
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-zone1
+simulationType  RAS;
+
+RAS
 {{
+    RASModel        kOmegaSST;
 
-    cellZone    cell_{mixer_name};
-    active      yes;
+    turbulence      on;
 
+    printCoeffs     on;
 
-    origin    ({x_origin} {y_origin} {z_origin});
-    axis      ({x_axis} {y_axis} {z_axis});
-
-    rpm       {rpm};
+    viscosityModel  powerLaw;
+    nuMax           {nuMax};    
+    nuMin           8e-07;  //Wasser
+    k               {k};
+    n               {n};
 
 }}
-
-
 
 // ************************************************************************* //
 """

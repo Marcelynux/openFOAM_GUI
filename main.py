@@ -1,4 +1,5 @@
 from GUI import GUI_class
+import tkinter as tk
 
 
 def main():

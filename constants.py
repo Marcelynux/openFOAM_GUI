@@ -4,7 +4,7 @@ FG_COLOR = "#ffffff"
 BTN_COLOR = "#3c3f41"
 
 #file paths
-path_save = "/home/marc/personal_projects/openFOAM_GUI/result"
+path_save_constant = "/home/marc/personal_projects/openFOAM_GUI/result/constant"
 
 #window dimensions
 APP_WIDTH = 1300
