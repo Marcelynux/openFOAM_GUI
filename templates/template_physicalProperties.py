@@ -1,35 +1,21 @@
-momentumTransport_body = r"""/*--------------------------------*- C++ -*----------------------------------*\
+physicalProperties_body = r"""/*--------------------------------*- C++ -*----------------------------------*\
   =========                 |				
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Version:  9                                   	
+    \\  /    A nd           | Version:  11                                  	
      \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {{
     format      ascii;
     class       dictionary;
-    object      momentumTransport;
+    object      physicalProperties;
 }}
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-simulationType  RAS;
+viscosityModel  constant;
 
-RAS
-{{
-    RASModel        kOmegaSST;
-
-    turbulence      on;
-
-    printCoeffs     on;
-
-    viscosityModel  powerLaw;
-    nuMax           {nu_max};    
-    nuMin           8e-07;  //Wasser
-    k               {k};
-    n               {n};
-
-}}
+nu             [ 0 2 -1 0 0 0 0 ] {kin_visc};	//Wasser 30°C
 
 // ************************************************************************* //
 """

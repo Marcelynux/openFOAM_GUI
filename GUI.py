@@ -1,13 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-from constants import (BG_COLOR, 
-                       BTN_COLOR, 
-                       FG_COLOR,
-                       path_save_constant,
-                       APP_WIDTH,
-                       APP_HEIGHT)
+from constants import *
 from templates.template_MRF import MRFProperties_body
 from templates.template_momentumTransport import momentumTransport_body
+from templates.template_physicalProperties import physicalProperties_body
 
 class GUI_class:
     def __init__(self):
@@ -19,19 +15,21 @@ class GUI_class:
 
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(expand=True, fill="both")
-        self.frame_MRFProperties = tk.Frame(self.notebook, width=APP_WIDTH, height=APP_HEIGHT)
+        self.frame_costant = tk.Frame(self.notebook, width=APP_WIDTH, height=APP_HEIGHT)
         self.frame2 = tk.Frame(self.notebook, width=APP_WIDTH, height=APP_HEIGHT)
         self.frame3 = tk.Frame(self.notebook, width=APP_WIDTH, height=APP_HEIGHT)
 
-        self.label_mixer_name = tk.Label(self.frame_MRFProperties, height = 1, width = 40, font = ("Arial", 16), text="Hier Rührwerksnamen eingeben:")
+        self.label_mixer_name = tk.Label(self.frame_costant, height = 1, width = 40, font = ("Arial", 16), text="Hier Rührwerksnamen eingeben:")
         self.label_mixer_name.pack(pady = 10)
-        self.entry_mixer_name = tk.Entry(self.frame_MRFProperties, width=25, font=("Arial", 14))
+        self.entry_mixer_name = tk.Entry(self.frame_costant, width=25, font=("Arial", 14))
         self.entry_mixer_name.pack(pady=5)
 
+
+        # MRFProperties GUI
         self.MRF_coordinate_labels = []
         self.MRF_coordinate_entries = []
         MRF_coordinate_label_texts = ["origin x", "origin y", "origin z", "axis x", "axis y", "axis z"]
-        self.MRF_coordinate_subframe = tk.Frame(self.frame_MRFProperties, width=APP_WIDTH, height="200")
+        self.MRF_coordinate_subframe = tk.Frame(self.frame_costant, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
         for row in range(4):
             for col in range(3):
                 if(row % 2 != 0):
@@ -40,7 +38,7 @@ class GUI_class:
                         width=10,
                         font = ("Arial", 14),
                     )
-                    entry.grid(row=row, column=col)
+                    entry.grid(row=row, column=col, pady=5)
                     self.MRF_coordinate_entries.append(entry)
                 else:
                     if(row == 0):
@@ -48,9 +46,10 @@ class GUI_class:
                             self.MRF_coordinate_subframe,
                             width=10,
                             font = ("Arial", 16),
-                            text=MRF_coordinate_label_texts[col]
+                            text=MRF_coordinate_label_texts[col],
+                            relief="raised"
                         )
-                        label.grid(row=row, column=col)
+                        label.grid(row=row, column=col, pady=5)
                         self.MRF_coordinate_labels.append(label)
                     else:
                         label = tk.Label(
@@ -59,39 +58,72 @@ class GUI_class:
                             font = ("Arial", 16),
                             text=MRF_coordinate_label_texts[col + 3]
                         )
-                        label.grid(row=row, column=col)
+                        label.grid(row=row, column=col, pady=5)
                         self.MRF_coordinate_labels.append(label)
-        self.MRF_coordinate_subframe.pack(pady=10)
+        self.MRF_coordinate_subframe.pack(pady=10, )
 
-        self.MRF_rpm_label = tk.Label(self.frame_MRFProperties, height = 1, width = 20, font = ("Arial", 16), text="Drehzahl:")
+        self.MRF_rpm_label = tk.Label(self.frame_costant, height = 1, width = 20, font = ("Arial", 16), text="Drehzahl:")
         self.MRF_rpm_label.pack(pady = 10)
-        self.MRF_rpm_entry = tk.Entry(self.frame_MRFProperties, width=10, font=("Arial", 14))
+        self.MRF_rpm_entry = tk.Entry(self.frame_costant, width=10, font=("Arial", 14))
         self.MRF_rpm_entry.pack(pady=5)
 
+
+        # momentumTransport GUI
+        self.momentumTransport_labels = []
+        self.momentumTransport_entries = []
+        momentumTransport_label_texts = ["nu_max", "consistency factor k", "flow index n"]
+        self.momentumTransport_subframe = tk.Frame(self.frame_costant, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
+        for row in range(2):
+            for col in range(3):
+                if(row % 2 != 0):
+                    entry = tk.Entry(
+                        self.momentumTransport_subframe,
+                        width=10,
+                        font = ("Arial", 14),
+                    )
+                    entry.grid(row=row, column=col, pady=5)
+                    self.momentumTransport_entries.append(entry)
+                else:
+                    label = tk.Label(
+                        self.momentumTransport_subframe,
+                        width=20,
+                        font = ("Arial", 16),
+                        text=momentumTransport_label_texts[col],
+                        relief="raised"
+                    )
+                    label.grid(row=row, column=col, pady=5)
+                    self.momentumTransport_labels.append(label)
+        self.momentumTransport_subframe.pack(pady=10, )
+
+        self.kin_visc_label = tk.Label(self.frame_costant, height = 1, width = 30, font = ("Arial", 16), text="kinematic viscosity [m/s^2]:")
+        self.kin_visc_label.pack(pady = 10)
+        self.kin_visc_entry = tk.Entry(self.frame_costant, width=10, font=("Arial", 14))
+        self.kin_visc_entry.pack(pady=5)
+
         self.button_MRF_entries = tk.Button(
-            self.frame_MRFProperties,
+            self.frame_costant,
             text="Daten übernehmen",
             bg=BTN_COLOR,
             fg=FG_COLOR,
             activebackground="#505354",
             activeforeground=FG_COLOR,
-            command=self.set_MRFProperties
+            command=self.set_constant_files
         )
         self.button_MRF_entries.pack(pady=10)
 
         self.save_button = tk.Button(
-            self.frame_MRFProperties,
+            self.frame_costant,
             text="Speichern",
             bg=BTN_COLOR,
             fg=FG_COLOR,
             activebackground="#505354",
             activeforeground=FG_COLOR,
-            command=self.write_MRFProperties
+            command=self.write_constant_files
         )
         self.save_button.pack(pady=10)
 
         self.close_button = tk.Button(
-            self.frame_MRFProperties,
+            self.frame_costant,
             text="Schließen",
             bg=BTN_COLOR,
             fg=FG_COLOR,
@@ -101,11 +133,11 @@ class GUI_class:
         )
         self.close_button.pack(expand=True)
 
-        self.frame_MRFProperties.pack(fill="both", expand=True)
+        self.frame_costant.pack(fill="both", expand=True)
         self.frame2.pack(fill="both", expand=True)
         self.frame3.pack(fill="both", expand=True)
 
-        self.notebook.add(self.frame_MRFProperties, text="MRFProperties")
+        self.notebook.add(self.frame_costant, text="MRFProperties")
         self.notebook.add(self.frame2, text="Tab2")
         self.notebook.add(self.frame3, text="Tab3")
 
@@ -119,9 +151,26 @@ class GUI_class:
         self.z_axis = ""
         self.rpm = ""
         
+        #text entries for momentumTransport
+        self.nu_max = ""
+        self.consistency_faktor_k = ""
+        self.flow_index = ""
+
+        #text entries for physicalProperties
+        self.kin_visc = ""
 
         # Ereignisschleife starten
         self.root.mainloop()
+
+    def write_constant_files(self):
+        self.write_MRFProperties()
+        self.write_momentumTransport()
+        self.write_physicalProperties()
+
+    def set_constant_files(self):
+        self.set_MRFProperties()
+        self.set_momentumTransport()
+        self.set_physicalProperties()
 
     def write_MRFProperties(self):
         file_path = path_save_constant + "/MRFProperties"
@@ -147,5 +196,33 @@ class GUI_class:
         self.y_axis = self.MRF_coordinate_entries[4].get()
         self.z_axis = self.MRF_coordinate_entries[5].get()
         self.rpm = self.MRF_rpm_entry.get()
+        return
+    
+    def write_momentumTransport(self):
+        file_path = path_save_constant + "/momentumTransport"
+        text = momentumTransport_body.format(nu_max = self.nu_max,
+                                             k = self.consistency_faktor_k,
+                                             n = self.flow_index)
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(text)
+        return
+    
+    def set_momentumTransport(self):
+        self.nu_max = self.momentumTransport_entries[0].get()
+        self.consistency_faktor_k = self.momentumTransport_entries[1].get()
+        self.flow_index = self.momentumTransport_entries[2].get()
+        return
+    
+    def write_physicalProperties(self):
+        file_path = path_save_constant + "/physicalProperties"
+        text = physicalProperties_body.format(kin_visc = self.kin_visc)
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(text)
+        return
+    
+    def set_physicalProperties(self):
+        self.kin_visc = self.kin_visc_entry.get()
         return
 
