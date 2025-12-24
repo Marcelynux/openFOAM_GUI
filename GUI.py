@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from constants import *
 from templates.template_MRF import MRFProperties_body
 from templates.template_momentumTransport import momentumTransport_body
@@ -16,12 +17,22 @@ class GUI_class:
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(expand=True, fill="both")
         self.frame_costant = tk.Frame(self.notebook, width=APP_WIDTH, height=APP_HEIGHT)
-        self.frame2 = tk.Frame(self.notebook, width=APP_WIDTH, height=APP_HEIGHT)
+        self.frame_general = tk.Frame(self.notebook, width=APP_WIDTH, height=APP_HEIGHT)
         self.frame3 = tk.Frame(self.notebook, width=APP_WIDTH, height=APP_HEIGHT)
 
-        self.label_mixer_name = tk.Label(self.frame_costant, height = 1, width = 40, font = ("Arial", 16), text="Hier Rührwerksnamen eingeben:")
+        #general setting GUI
+        self.mixer_num_list = list(range(41))
+        self.drop_mixer_num = ttk.Combobox(self.frame_general, width=10, values=self.mixer_num_list)
+        self.drop_mixer_num.bind("<<ComboboxSelected>>", self.set_mixer_num)
+        self.drop_mixer_num.pack(pady=5)
+
+        self.mixer_labels = []
+        self.mixer_entries = []
+
+        
+        self.label_mixer_name = tk.Label(self.frame_general, height = 1, width = 40, font = ("Arial", 16), text="Hier Rührwerksnamen eingeben:")
         self.label_mixer_name.pack(pady = 10)
-        self.entry_mixer_name = tk.Entry(self.frame_costant, width=25, font=("Arial", 14))
+        self.entry_mixer_name = tk.Entry(self.frame_general, width=25, font=("Arial", 14))
         self.entry_mixer_name.pack(pady=5)
 
 
@@ -132,13 +143,13 @@ class GUI_class:
             command=self.root.destroy
         )
         self.close_button.pack(expand=True)
-
+        
+        self.frame_general.pack(fill="both", expand=True)
         self.frame_costant.pack(fill="both", expand=True)
-        self.frame2.pack(fill="both", expand=True)
         self.frame3.pack(fill="both", expand=True)
-
-        self.notebook.add(self.frame_costant, text="MRFProperties")
-        self.notebook.add(self.frame2, text="Tab2")
+        
+        self.notebook.add(self.frame_general, text="General Settings")
+        self.notebook.add(self.frame_costant, text="Constant Files")
         self.notebook.add(self.frame3, text="Tab3")
 
         #text entries for MRFProperties
@@ -161,6 +172,40 @@ class GUI_class:
 
         # Ereignisschleife starten
         self.root.mainloop()
+
+    def set_mixer_num(self, event):
+        self.mixer_num = int(self.drop_mixer_num.get())
+        messagebox.showinfo(
+            title="New Selection",
+            message=f"Number of mixers: {self.mixer_num}"
+        )        
+        mixer_label_texts = []
+        self.mixer_def_subframe = tk.Frame(self.frame_general, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
+        for row in range(self.mixer_num // 4):
+            for col in range(4):
+                if(row % 2 != 0):
+                    entry = tk.Entry(
+                        self.mixer_def_subframe,
+                        width=10,
+                        font = ("Arial", 14),
+                    )
+                    entry.grid(row=row, column=col, pady=5)
+                    self.mixer_entries.append(entry)
+                else:
+                    label = tk.Label(
+                        self.mixer_def_subframe,
+                        width=10,
+                        font = ("Arial", 16),
+                        text=mixer_label_texts[col],
+                        relief="raised"
+                    )
+                    label.grid(row=row, column=col, pady=5)
+                    self.mixer_labels.append(label)
+
+
+
+    def set_general_settings(self):
+        self.mixer_name = self.entry_mixer_name.get()
 
     def write_constant_files(self):
         self.write_MRFProperties()
@@ -188,7 +233,6 @@ class GUI_class:
         return
     
     def set_MRFProperties(self):
-        self.mixer_name = self.entry_mixer_name.get()
         self.x_origin = self.MRF_coordinate_entries[0].get()
         self.y_origin = self.MRF_coordinate_entries[1].get()
         self.z_origin = self.MRF_coordinate_entries[2].get()

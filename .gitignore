@@ -10,3 +10,4 @@ windows_CFD
 result/
 # Virtual environments
 .venv
+test.py
