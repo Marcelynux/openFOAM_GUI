@@ -127,27 +127,18 @@ class GUI_class:
             message=f"Number of mixers: {self.mixer_num}"
         )        
         mixer_label_texts = []
-        self.mixer_def_subframe = tk.Frame(self.frame_general, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
-        for row in range(self.mixer_num // 4):
-            for col in range(4):
-                if(row % 2 != 0):
-                    entry = tk.Entry(
-                        self.mixer_def_subframe,
-                        width=10,
-                        font = ("Arial", LABEL_FONT_SIZE),
-                    )
-                    entry.grid(row=row, column=col, pady=5)
-                    self.mixer_entries.append(entry)
-                else:
-                    label = tk.Label(
-                        self.mixer_def_subframe,
-                        width=10,
-                        font = ("Arial", LABEL_FONT_SIZE),
-                        text=mixer_label_texts[col],
-                        relief="raised"
-                    )
-                    label.grid(row=row, column=col, pady=5)
-                    self.mixer_labels.append(label)
+        for i in range(self.mixer_num):
+            mixer_label_texts.append(f"mixer {i+1}")
+        if (self.mixer_num % 4 == 0):
+            columns = 4
+        elif (self.mixer_num % 3 == 0):
+            columns = 3
+        elif (self.mixer_num % 2 == 0):
+            columns = 2
+        else:
+            columns = 1
+        self.mixer_def_subframe = self.build_grid_of_entries(columns, 1 if (self.mixer_num // columns) == 0 else ((self.mixer_num // columns) * 2), mixer_label_texts, self.frame_general)
+        self.mixer_def_subframe.pack(pady=10)
 
 
 
@@ -218,8 +209,8 @@ class GUI_class:
         return
     
     def build_grid_of_entries(self, columns: int, rows: int, label_texts: list, frame_to_buid):
-        labels = []
-        entries = []
+        #labels = []
+        #entries = []
         subframe = tk.Frame(frame_to_buid, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
         for row in range(rows):
             for col in range(columns):
@@ -230,16 +221,16 @@ class GUI_class:
                         font = ("Arial", LABEL_FONT_SIZE),
                     )
                     entry.grid(row=row, column=col, pady=5)
-                    entries.append(entry)
+                    #entries.append(entry)
                 else:
                     label = tk.Label(
                         subframe,
                         width=20,
                         font = ("Arial", LABEL_FONT_SIZE),
-                        text=label_texts[col+(row*col)],
+                        text=label_texts[col+((row//2)*columns)],
                         relief="raised"
                     )
                     label.grid(row=row, column=col, pady=5)
-                    labels.append(label)
+                    #labels.append(label)
         return subframe
 
