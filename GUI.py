@@ -30,85 +30,32 @@ class GUI_class:
         self.mixer_entries = []
 
         
-        self.label_mixer_name = tk.Label(self.frame_general, height = 1, width = 40, font = ("Arial", 16), text="Hier Rührwerksnamen eingeben:")
+        self.label_mixer_name = tk.Label(self.frame_general, height = 1, width = 40, font = ("Arial", LABEL_FONT_SIZE), text="Hier Rührwerksnamen eingeben:")
         self.label_mixer_name.pack(pady = 10)
-        self.entry_mixer_name = tk.Entry(self.frame_general, width=25, font=("Arial", 14))
+        self.entry_mixer_name = tk.Entry(self.frame_general, width=25, font=("Arial", LABEL_FONT_SIZE))
         self.entry_mixer_name.pack(pady=5)
 
 
         # MRFProperties GUI
-        self.MRF_coordinate_labels = []
-        self.MRF_coordinate_entries = []
         MRF_coordinate_label_texts = ["origin x", "origin y", "origin z", "axis x", "axis y", "axis z"]
-        self.MRF_coordinate_subframe = tk.Frame(self.frame_costant, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
-        for row in range(4):
-            for col in range(3):
-                if(row % 2 != 0):
-                    entry = tk.Entry(
-                        self.MRF_coordinate_subframe,
-                        width=10,
-                        font = ("Arial", 14),
-                    )
-                    entry.grid(row=row, column=col, pady=5)
-                    self.MRF_coordinate_entries.append(entry)
-                else:
-                    if(row == 0):
-                        label = tk.Label(
-                            self.MRF_coordinate_subframe,
-                            width=10,
-                            font = ("Arial", 16),
-                            text=MRF_coordinate_label_texts[col],
-                            relief="raised"
-                        )
-                        label.grid(row=row, column=col, pady=5)
-                        self.MRF_coordinate_labels.append(label)
-                    else:
-                        label = tk.Label(
-                            self.MRF_coordinate_subframe,
-                            width=10,
-                            font = ("Arial", 16),
-                            text=MRF_coordinate_label_texts[col + 3]
-                        )
-                        label.grid(row=row, column=col, pady=5)
-                        self.MRF_coordinate_labels.append(label)
-        self.MRF_coordinate_subframe.pack(pady=10, )
+        self.MRF_coordinate_subframe = self.build_grid_of_entries(3, 4, MRF_coordinate_label_texts, self.frame_costant)
+        self.MRF_coordinate_subframe.pack(pady=10)
+        
 
-        self.MRF_rpm_label = tk.Label(self.frame_costant, height = 1, width = 20, font = ("Arial", 16), text="Drehzahl:")
+        self.MRF_rpm_label = tk.Label(self.frame_costant, height = 1, width = 20, font = ("Arial", LABEL_FONT_SIZE), text="Drehzahl:")
         self.MRF_rpm_label.pack(pady = 10)
-        self.MRF_rpm_entry = tk.Entry(self.frame_costant, width=10, font=("Arial", 14))
+        self.MRF_rpm_entry = tk.Entry(self.frame_costant, width=10, font=("Arial", LABEL_FONT_SIZE))
         self.MRF_rpm_entry.pack(pady=5)
 
 
         # momentumTransport GUI
-        self.momentumTransport_labels = []
-        self.momentumTransport_entries = []
         momentumTransport_label_texts = ["nu_max", "consistency factor k", "flow index n"]
-        self.momentumTransport_subframe = tk.Frame(self.frame_costant, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
-        for row in range(2):
-            for col in range(3):
-                if(row % 2 != 0):
-                    entry = tk.Entry(
-                        self.momentumTransport_subframe,
-                        width=10,
-                        font = ("Arial", 14),
-                    )
-                    entry.grid(row=row, column=col, pady=5)
-                    self.momentumTransport_entries.append(entry)
-                else:
-                    label = tk.Label(
-                        self.momentumTransport_subframe,
-                        width=20,
-                        font = ("Arial", 16),
-                        text=momentumTransport_label_texts[col],
-                        relief="raised"
-                    )
-                    label.grid(row=row, column=col, pady=5)
-                    self.momentumTransport_labels.append(label)
-        self.momentumTransport_subframe.pack(pady=10, )
+        self.momentumTransport_subframe = self.build_grid_of_entries(3, 2, momentumTransport_label_texts, self.frame_costant)
+        self.momentumTransport_subframe.pack(pady=10)
 
-        self.kin_visc_label = tk.Label(self.frame_costant, height = 1, width = 30, font = ("Arial", 16), text="kinematic viscosity [m/s^2]:")
+        self.kin_visc_label = tk.Label(self.frame_costant, height = 1, width = 30, font = ("Arial", LABEL_FONT_SIZE), text="kinematic viscosity [m/s^2]:")
         self.kin_visc_label.pack(pady = 10)
-        self.kin_visc_entry = tk.Entry(self.frame_costant, width=10, font=("Arial", 14))
+        self.kin_visc_entry = tk.Entry(self.frame_costant, width=10, font=("Arial", LABEL_FONT_SIZE))
         self.kin_visc_entry.pack(pady=5)
 
         self.button_MRF_entries = tk.Button(
@@ -187,7 +134,7 @@ class GUI_class:
                     entry = tk.Entry(
                         self.mixer_def_subframe,
                         width=10,
-                        font = ("Arial", 14),
+                        font = ("Arial", LABEL_FONT_SIZE),
                     )
                     entry.grid(row=row, column=col, pady=5)
                     self.mixer_entries.append(entry)
@@ -195,7 +142,7 @@ class GUI_class:
                     label = tk.Label(
                         self.mixer_def_subframe,
                         width=10,
-                        font = ("Arial", 16),
+                        font = ("Arial", LABEL_FONT_SIZE),
                         text=mixer_label_texts[col],
                         relief="raised"
                     )
@@ -269,4 +216,30 @@ class GUI_class:
     def set_physicalProperties(self):
         self.kin_visc = self.kin_visc_entry.get()
         return
+    
+    def build_grid_of_entries(self, columns: int, rows: int, label_texts: list, frame_to_buid):
+        labels = []
+        entries = []
+        subframe = tk.Frame(frame_to_buid, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
+        for row in range(rows):
+            for col in range(columns):
+                if(row % 2 != 0):
+                    entry = tk.Entry(
+                        subframe,
+                        width=10,
+                        font = ("Arial", LABEL_FONT_SIZE),
+                    )
+                    entry.grid(row=row, column=col, pady=5)
+                    entries.append(entry)
+                else:
+                    label = tk.Label(
+                        subframe,
+                        width=20,
+                        font = ("Arial", LABEL_FONT_SIZE),
+                        text=label_texts[col+(row*col)],
+                        relief="raised"
+                    )
+                    label.grid(row=row, column=col, pady=5)
+                    labels.append(label)
+        return subframe
 
