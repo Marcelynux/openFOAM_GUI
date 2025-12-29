@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from constants import *
-from templates.template_MRF import MRFProperties_body
+from templates.template_MRF import MRFProperties_body, MRFProperties_mixer_element
 from templates.template_momentumTransport import momentumTransport_body
 from templates.template_physicalProperties import physicalProperties_body
 
@@ -38,7 +38,7 @@ class GUI_class:
 
         # MRFProperties GUI
         MRF_coordinate_label_texts = ["origin x", "origin y", "origin z", "axis x", "axis y", "axis z"]
-        self.MRF_coordinate_subframe = self.build_grid_of_entries(3, 4, MRF_coordinate_label_texts, self.frame_costant)
+        self.MRF_coordinate_subframe, self.MRF_coordinate_subframe_labels, self.MRF_coordinate_subframe_entries = self.build_grid_of_entries(3, 4, MRF_coordinate_label_texts, self.frame_costant)
         self.MRF_coordinate_subframe.pack(pady=10)
         
 
@@ -50,7 +50,7 @@ class GUI_class:
 
         # momentumTransport GUI
         momentumTransport_label_texts = ["nu_max", "consistency factor k", "flow index n"]
-        self.momentumTransport_subframe = self.build_grid_of_entries(3, 2, momentumTransport_label_texts, self.frame_costant)
+        self.momentumTransport_subframe, self.momentumTransport_subframe_labels, self.momentumTransport_subframe_entries = self.build_grid_of_entries(3, 2, momentumTransport_label_texts, self.frame_costant)
         self.momentumTransport_subframe.pack(pady=10)
 
         self.kin_visc_label = tk.Label(self.frame_costant, height = 1, width = 30, font = ("Arial", LABEL_FONT_SIZE), text="kinematic viscosity [m/s^2]:")
@@ -137,13 +137,8 @@ class GUI_class:
             columns = 2
         else:
             columns = 1
-        self.mixer_def_subframe = self.build_grid_of_entries(columns, 1 if (self.mixer_num // columns) == 0 else ((self.mixer_num // columns) * 2), mixer_label_texts, self.frame_general)
+        self.mixer_def_subframe, self.mixer_def_subframe_labels, self.mixer_def_subframe_entries = self.build_grid_of_entries(columns, 1 if (self.mixer_num // columns) == 0 else ((self.mixer_num // columns) * 2), mixer_label_texts, self.frame_general)
         self.mixer_def_subframe.pack(pady=10)
-
-
-
-    def set_general_settings(self):
-        self.mixer_name = self.entry_mixer_name.get()
 
     def write_constant_files(self):
         self.write_MRFProperties()
@@ -157,26 +152,29 @@ class GUI_class:
 
     def write_MRFProperties(self):
         file_path = path_save_constant + "/MRFProperties"
-        text = MRFProperties_body.format(mixer_name=self.mixer_name, 
-                                         x_origin=self.x_origin, 
-                                         y_origin=self.y_origin, 
-                                         z_origin=self.z_origin,
-                                         x_axis=self.x_axis,
-                                         y_axis=self.y_axis,
-                                         z_axis=self.z_axis,
-                                         rpm=self.rpm)
-
+        elements = ""
+        for i in range(self.mixer_num):
+            elements += MRFProperties_mixer_element.format(zone=f"zone{i+1}",
+                                                mixer_name=self.mixer_def_subframe_entries[i].get(), 
+                                                x_origin=self.x_origin, 
+                                                y_origin=self.y_origin, 
+                                                z_origin=self.z_origin,
+                                                x_axis=self.x_axis,
+                                                y_axis=self.y_axis,
+                                                z_axis=self.z_axis,
+                                                rpm=self.rpm) + "\n\n"
+        text = MRFProperties_body.format(mixer_definition=elements)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(text)
         return
     
     def set_MRFProperties(self):
-        self.x_origin = self.MRF_coordinate_entries[0].get()
-        self.y_origin = self.MRF_coordinate_entries[1].get()
-        self.z_origin = self.MRF_coordinate_entries[2].get()
-        self.x_axis = self.MRF_coordinate_entries[3].get()
-        self.y_axis = self.MRF_coordinate_entries[4].get()
-        self.z_axis = self.MRF_coordinate_entries[5].get()
+        self.x_origin = self.MRF_coordinate_subframe_entries[0].get()
+        self.y_origin = self.MRF_coordinate_subframe_entries[1].get()
+        self.z_origin = self.MRF_coordinate_subframe_entries[2].get()
+        self.x_axis = self.MRF_coordinate_subframe_entries[3].get()
+        self.y_axis = self.MRF_coordinate_subframe_entries[4].get()
+        self.z_axis = self.MRF_coordinate_subframe_entries[5].get()
         self.rpm = self.MRF_rpm_entry.get()
         return
     
@@ -191,9 +189,9 @@ class GUI_class:
         return
     
     def set_momentumTransport(self):
-        self.nu_max = self.momentumTransport_entries[0].get()
-        self.consistency_faktor_k = self.momentumTransport_entries[1].get()
-        self.flow_index = self.momentumTransport_entries[2].get()
+        self.nu_max = self.momentumTransport_subframe_entries[0].get()
+        self.consistency_faktor_k = self.momentumTransport_subframe_entries[1].get()
+        self.flow_index = self.momentumTransport_subframe_entries[2].get()
         return
     
     def write_physicalProperties(self):
@@ -209,8 +207,8 @@ class GUI_class:
         return
     
     def build_grid_of_entries(self, columns: int, rows: int, label_texts: list, frame_to_buid):
-        #labels = []
-        #entries = []
+        labels = []
+        entries = []
         subframe = tk.Frame(frame_to_buid, width=APP_WIDTH, height="200", background=SUBCONT_COLOR, relief="raised")
         for row in range(rows):
             for col in range(columns):
@@ -221,7 +219,7 @@ class GUI_class:
                         font = ("Arial", LABEL_FONT_SIZE),
                     )
                     entry.grid(row=row, column=col, pady=5)
-                    #entries.append(entry)
+                    entries.append(entry)
                 else:
                     label = tk.Label(
                         subframe,
@@ -231,6 +229,6 @@ class GUI_class:
                         relief="raised"
                     )
                     label.grid(row=row, column=col, pady=5)
-                    #labels.append(label)
-        return subframe
+                    labels.append(label)
+        return subframe, labels, entries
 

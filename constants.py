@@ -8,6 +8,6 @@ SUBCONT_COLOR = "#309ae0"
 path_save_constant = "/home/marc/personal_projects/openFOAM_GUI/result/constant"
 
 #window dimensions
-APP_WIDTH = 2500
-APP_HEIGHT = 1600
-LABEL_FONT_SIZE = 32
+APP_WIDTH = 1300
+APP_HEIGHT = 800
+LABEL_FONT_SIZE = 16
